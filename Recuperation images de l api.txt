@@ -1,0 +1,68 @@
+Parfait 👍 tu veux que les images de la galerie (#portfolio .gallery) ne soient plus codées en dur dans le HTML, mais récupérées depuis l’API http://localhost:5678/api/works.
+
+👉 On va donc :
+
+Vider la galerie au chargement
+
+Appeler l’API
+
+Générer dynamiquement les <figure> avec <img> et <figcaption>
+
+✅ Étape 1 : ton HTML à simplifier
+Dans ton index.html, tu peux vider complètement la galerie (laisser un <div class="gallery"></div> vide) :
+
+html
+Copier
+Modifier
+<section id="portfolio">
+  <h2>Mes Projets</h2>
+  <div class="gallery"></div>
+</section>
+✅ Étape 2 : ton script.js
+Voici un script qui vide la galerie et la remplit avec les données de l’API :
+
+javascript
+Copier
+Modifier
+document.addEventListener("DOMContentLoaded", async () => {
+    const gallery = document.querySelector(".gallery");
+
+    if (!gallery) {
+        console.error("❌ Galerie introuvable !");
+        return;
+    }
+
+    try {
+        // 1. Récupération des projets depuis l’API
+        const response = await fetch("http://localhost:5678/api/works");
+        const works = await response.json();
+
+        // 2. Vider la galerie
+        gallery.innerHTML = "";
+
+        // 3. Pour chaque projet, créer un <figure>
+        works.forEach(work => {
+            const figure = document.createElement("figure");
+
+            const img = document.createElement("img");
+            img.src = work.imageUrl;
+            img.alt = work.title;
+
+            const figcaption = document.createElement("figcaption");
+            figcaption.innerText = work.title;
+
+            figure.appendChild(img);
+            figure.appendChild(figcaption);
+            gallery.appendChild(figure);
+        });
+
+    } catch (error) {
+        console.error("❌ Erreur lors de la récupération des projets :", error);
+    }
+});
+✅ Résultat
+Quand la page charge, la galerie est vide au départ.
+
+Le JavaScript appelle l’API et crée dynamiquement chaque projet avec son image + titre.
+
+Plus besoin des images codées en dur dans le HTML 🎉

@@ -1,0 +1,583 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/** end reset css**/
+body {
+	max-width: 1140px;
+	margin:auto;
+	font-family: 'Work Sans' ;
+	font-size: 14px;
+}
+header {
+	display: flex;
+	justify-content: space-between;
+	margin: 50px 0
+}
+section {
+	margin: 50px 0
+}
+
+h1{
+	display: flex;
+	flex-direction: column;
+	font-family: 'Syne';
+	font-size: 22px;
+	font-weight: 800;
+	color: #B1663C
+}
+
+h1 > span {
+	font-family: 'Work Sans';
+	font-size:10px;
+	letter-spacing: 0.1em;
+;
+}
+
+h2{
+	font-family: 'Syne';
+	font-weight: 700;
+	font-size: 30px;
+	color: #1D6154
+}
+nav ul {
+	display: flex;
+	align-items: center;
+	list-style-type: none;
+
+}
+nav li {
+	padding: 0 10px;
+	font-size: 1.2em;
+}
+
+li:hover {
+	color: #B1663C;
+}
+#introduction {
+	display: flex;
+	align-items: center;
+}
+#introduction figure {
+	flex: 1
+}
+#introduction img {
+	display: block;
+	margin: auto;
+	width: 80%;
+}
+
+#introduction article {
+	flex: 1
+}
+#introduction h2 {
+	margin-bottom: 1em;
+}
+
+#introduction p {
+	margin-bottom: 0.5em;
+}
+#portfolio h2 {
+	text-align: center;
+	margin-bottom: 1em;
+}
+.gallery {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-column-gap: 20px;
+	grid-row-gap: 20px;
+}
+
+.gallery img {
+	width: 100%;
+
+}
+#contact {
+	width: 50%;
+margin: auto;
+}
+#contact > * {
+	text-align: center;
+
+}
+#contact h2{
+	margin-bottom: 20px;
+}
+#contact form {
+	text-align: left;
+	margin-top:30px;
+	display: flex;
+	flex-direction: column;
+}
+
+#contact input {
+	height: 50px;
+	font-size: 1.2em;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+#contact label {
+	margin: 2em 0 1em 0;
+}
+#contact textarea {
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+input[type="submit"]{
+	font-family: 'Syne';
+	font-weight: 700;
+	color: white;
+	background-color: #1D6154;
+	margin : 2em auto ;
+	width: 180px;
+	text-align: center;
+	border-radius: 60px ;
+}
+
+footer nav ul {
+	display: flex;
+	justify-content: flex-end;
+	margin: 2em
+}
+
+/* Container des boutons */
+.button-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* Boutons de filtrage */
+.filter-btn {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: #1D6154;
+    background: transparent;
+    border: 2px solid #1D6154;
+    border-radius: 20px;
+    padding: 5px 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* État actif ou au survol */
+.filter-btn:hover,
+.filter-btn.active {
+    background: #1D6154;
+    color: #fff;
+}
+
+/* Overlay (fond assombri) */
+.login-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 999;
+}
+
+/* Modale */
+.login-modal {
+	background: #fff;
+	width: 800px;
+	max-width: 95%;
+	padding: 30px;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	box-sizing: border-box;
+}
+
+/* Header */
+.login-modal header {
+	display: flex;
+	justify-content: space-between; /* logo à gauche, menu à droite */
+	align-items: center;
+	margin-bottom: 30px;
+}
+/* Titre "Log in" centré */
+.login-modal h2 {
+	text-align: center;
+	font-family: 'Syne', sans-serif;
+	font-weight: 700;
+	font-size: 28px;
+	margin-bottom: 20px;
+}
+/* Formulaire centré horizontalement */
+.login-modal form {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 400px;
+	margin: 0 auto; /* centre le formulaire horizontalement */
+	gap: 15px;
+}
+
+/* Labels au-dessus des champs, alignés à gauche */
+.login-modal label {
+	font-size: 12px;
+	font-weight: bold;
+	color: black;
+	margin-bottom: 5px;
+	align-self: flex-start; /* reste au début, pas centré */
+}
+
+/* Champs textarea avec bordure blanche et box-shadow */
+.login-modal .login-input {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #fff;   
+	background-color: #fff;   
+	border-radius: 5px;
+	resize: none;
+	font-size: 14px;
+	box-sizing: border-box;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Bouton Se connecter centré */
+.login-modal button {
+	font-family: 'Syne', sans-serif;
+	font-weight: 700;
+	font-size: 18px;
+	background-color: #1D6154;
+	color: white;
+	border: none;
+	padding: 10px 30px;
+	border-radius: 10px;
+	cursor: pointer;
+	margin: 20px auto 0 auto; /* centre horizontalement */
+	display: block;
+}
+
+/* Mot de passe oublié centré sous le bouton */
+.login-modal .login-forgot {
+	font-weight: bold;
+	font-size: 12px;
+	text-decoration: underline;
+	color: #000;
+	cursor: pointer;
+	text-align: center;
+	margin-top: 10px;
+}
+
+/* Footer */
+.login-modal footer {
+	display: flex;
+	justify-content: flex-end; /* mention légales à droite */
+	margin-top: 30px;
+}
+
+/* Container images */
+.gallery-images {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr); /* 5 images par ligne */
+	gap: 15px;
+	margin-bottom: 20px;
+	max-height: 500px;
+	overflow-x: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #1D6154 #fff;
+}
+
+
+/* Titre centré */
+.gallery-modal h2 {
+	text-align: center;
+	margin-bottom: 20px;
+	width: 100%;
+	margin-bottom: 50px; /* espace sous le titre */
+  }
+
+
+/* Wrapper image */
+.img-wrapper {
+	position: relative;
+}
+.img-wrapper img {
+	width: 100%;
+	height: 150px;
+	object-fit: cover;
+	border-radius: 5px;
+}
+.gallery-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: flex-end; /* aligne la modale à droite */
+    align-items: flex-start;    /* aligne la modale en haut */
+    padding: 20px;
+    z-index: 1000;
+}
+
+.gallery-modal {
+	position: fixed;
+	top: 50%;                /* position verticale */
+	left: 50%;               /* position horizontale */
+	transform: translate(-50%, -50%); /* centre parfaitement */
+	background: white;
+	padding: 30px;
+	border-radius: 10px;
+	max-width: 800px;
+	width: 80%;
+	max-height: 90vh;        /* empêche de dépasser l’écran */
+	overflow-y: auto;        /* scroll si trop de contenu */
+  }
+
+.gallery-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;  /* au lieu de left */
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10;
+}
+.delete-btn {
+    position: absolute;
+    bottom: 10px;
+    top: 10px;
+  	right: 10px;
+    font-size: 20px;
+	color: black;
+    cursor: pointer;
+    //background: rgba(255,255,255,0.7);
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+/* Bouton Ajouter une photo centré */
+.add-photo-btn {
+	// margin-top: 50px;
+	display: block;
+	margin: 20px auto 0;
+	padding: 10px 40px;
+	background-color: #1D6154;
+	border-radius: 30px;
+	color: white;
+	font-weight: 700;
+	font-size: 16px;
+	border: none;
+	cursor: pointer;
+	//margin: 30px auto 0 auto; /* ajoute de l’espace au-dessus */
+  }
+
+
+.add-photo-btn:hover {
+    background-color: #14503f;
+}
+
+button {
+	font-family: 'Syne', sans-serif;
+  }
+
+  .separator {
+	width: 100%;
+	height: 2px;
+	background-color: #1D6154; /* vert */
+	margin: 40px 0 30px 0; /* espace au-dessus et en dessous */
+  }
+
+  /*seconde modale*/
+  .add-photo-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999; /* très haut pour passer devant */
+  }
+  
+  .add-photo-modal {
+	background: #fff;
+	padding: 30px;
+	border-radius: 10px;
+	max-width: 500px;
+	width: 90%;
+	max-height: 90vh;
+	overflow-y: auto;
+	text-align: center;
+	position: relative;
+  }
+  .back-btn {
+	position: absolute;
+	top: 15px;       /* distance depuis le haut du modal */
+	left: 15px;      /* distance depuis la gauche du modal */
+	font-size: 30px; /* augmente la taille de la flèche */
+	cursor: pointer;
+	color: #333;     /* couleur de la flèche */
+	font-weight: bold;
+  }
+
+  .close-btn {
+	position: absolute;
+	top: 15px;       /* distance depuis le haut du modal */
+	right: 15px;     /* distance depuis la droite du modal */
+	font-size: 30px; /* taille de la croix */
+	cursor: pointer;
+	color: #333;
+	font-weight: bold;
+	z-index: 10;     /* s'assurer qu'elle reste au-dessus */
+  }
+
+  .add-photo-modal label {
+	display: block;
+	margin-top: 20px;   /* espace au-dessus du label */
+	font-weight: bold;
+	text-align: left;    /* s’assure que le texte est à gauche */
+  }
+  
+  .add-photo-modal textarea,
+  .add-photo-modal select {
+	display: block;
+	width: 100%;
+	margin-top: 5px;    /* espace entre le label et le champ */
+	padding: 8px;
+	font-size: 16px;
+	border: none;        /* plus de bordure solide */
+	border-radius: 5px;
+	box-sizing: border-box;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  /* Image montagne */
+.mountain-icon {
+	width: 120px;
+	height: auto;
+	margin: 15px auto;
+	display: block;
+  }
+  
+  /* Barre grise */
+  .separator2 {
+	width: 100%;
+	height: 2px;
+	background-color: #ddd;
+	margin: 30px 0;
+  }
+  
+  /* Bouton valider */
+  .validate-btn {
+	display: block;
+	margin: 0 auto 20px auto;
+	padding: 10px 100px;
+	background-color: #ccc;
+	color: white;
+	border: none;
+	border-radius: 30px;
+	font-family: 'Syne', sans-serif;
+	font-size: 16px;
+	cursor: pointer;
+  }
+  .validate-btn:hover {
+	background-color: #bbb;
+  }
+
+
+  .upload-box {
+	background-color: #cad2db; /* bleu */
+	padding: 30px 20px;
+	/*border-radius: 15px;*/
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px; /* espace entre les éléments */
+	color: #fff;
+	margin: 50px 0 0 0; /* 50px d’espace au-dessus */
+  }
+  
+  .upload-box img.mountain-icon {
+	width: 80px;
+	height: 80px;
+	object-fit: contain;
+  }
+  
+  .upload-box .upload-btn {
+	background-color: rgba(255, 255, 255, 0.25); /* léger fond blanc semi-transparent */
+	color:#14503f;
+	border: none;
+	border-radius: 30px;
+	padding: 15px 40px; /* plus grand pour être visible */
+	cursor: pointer;
+	font-weight: bold;
+	font-size: 18px;
+	transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  .upload-box .upload-btn:hover {
+	background-color: rgba(255, 255, 255, 0.4);
+	transform: scale(1.05); /* effet zoom au survol */
+  }
+  
+  .upload-box p {
+	margin: 0;
+	font-size: 14px;
+	text-align: center;
+	color: black;
+	
+  }
+  h3{
+	font-family: 'Syne';
+	font-weight: 700;
+	font-size: 30px;
+	color: black;
+}
