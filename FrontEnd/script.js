@@ -54,15 +54,15 @@ async function init() {
         // 🔹 Affichage initial
         displayWorks(works);
 
-        // 🔹 Gestion du login
-        const loginLink = document.querySelector('nav ul li:nth-child(3)');
-        if (loginLink) {
-            loginLink.addEventListener('click', e => {
-                e.preventDefault();
-                console.log('%cLog in', "font-family:'Syne',sans-serif;font-weight:700;font-size:30px;color:#1D6154");
-                createLoginModal();
-            });
-        }
+// 🔹 Gestion du login
+    const loginLink = document.querySelector('nav ul li:nth-child(3)');
+    if (loginLink) {
+    loginLink.addEventListener('click', e => {
+        e.preventDefault();
+        console.log('%cLog in', "font-family:'Syne',sans-serif;font-weight:700;font-size:30px;color:#1D6154");
+        window.location.href = "login.html"; // redirection vers la page login
+    });
+}
 
     } catch (error) {
         console.error("❌ Erreur lors de la récupération des données :", error);
@@ -96,67 +96,6 @@ function displayWorks(worksArray) {
 
     emptySpace.addEventListener("click", () => {
         modalGallery(worksArray);
-    });
-}
-
-// 🔹 Modale login
-function createLoginModal() {
-    if (document.querySelector(".login-overlay")) return; // éviter doublon
-
-    const overlay = document.createElement("div");
-    overlay.classList.add("login-overlay");
-
-    const modal = document.createElement("div");
-    modal.classList.add("login-modal");
-
-    const title = document.createElement("h2");
-    title.innerText = "Log in";
-
-    const form = document.createElement("form");
-    form.innerHTML = `
-        <label>Email</label>
-        <textarea name="email" rows="1" class="login-input"></textarea>
-        <label>Mot de passe</label>
-        <textarea name="password" rows="1" class="login-input"></textarea>
-        <p class="login-error" style="display:none"></p>
-        <button type="submit">Se connecter</button>
-        <p class="login-forgot">Mot de passe oublié</p>
-    `;
-
-    modal.append(title, form);
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
-
-    form.addEventListener("submit", async e => {
-        e.preventDefault();
-        const email = form.email.value.trim();
-        const password = form.password.value.trim();
-        const errorMsg = form.querySelector(".login-error");
-
-        try {
-            const response = await fetch("http://localhost:5678/api/users/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
-
-            if (!response.ok) {
-                errorMsg.innerText = "Erreur dans l’identifiant ou le mot de passe";
-                errorMsg.style.display = "block";
-                return;
-            }
-
-            const data = await response.json();
-            localStorage.setItem("token", data.token);
-            window.location.href = "edition.html";
-
-        } catch (err) {
-            errorMsg.innerText = "Erreur serveur";
-            errorMsg.style.display = "block";
-            console.error(err);
-        }
     });
 }
 

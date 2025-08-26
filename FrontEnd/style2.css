@@ -1,0 +1,148 @@
+/* Police globale */
+body {
+  font-family: 'Syne', sans-serif;
+  margin: 100px;
+}
+
+/* Login page centrée */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 100px); /* car margin 50px */
+}
+
+/* Conteneur login */
+.login-container {
+  background: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  width: 400px;
+}
+
+/* Titre login */
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Inputs */
+.login-input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 20px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Bouton plus petit centré */
+.login-container button {
+  width: 200px;
+  padding: 8px; /* réduit la hauteur */
+  background-color: #1D6154;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 14px; /* plus petit */
+  display: block;      /* nécessaire pour margin auto */
+  margin: 0 auto;      /* centre horizontalement */
+}
+
+.login-container button:hover {
+  background-color: #14443c;
+}
+
+/* Texte erreur */
+.login-error {
+  color: red;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Texte succès */
+.login-success {
+  color: green;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* "Mot de passe oublié" souligné */
+.login-forgot {
+  text-align: center;
+  margin-top: 30px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+header {
+  display: flex;
+  justify-content: space-between; /* espace entre h1 et nav */
+  align-items: center;           /* alignement vertical */
+  margin: 50px;                  /* marge générale */
+  font-family: 'Syne', sans-serif;
+}
+
+header h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #B1663C;
+  line-height: 1.2;  /* pour un peu d’espace entre les lignes */
+}
+
+
+header h1 span {
+  display: block;       /* force à passer à la ligne */
+  font-family: 'Work Sans', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+header nav ul {
+  display: flex;
+  list-style: none;
+  gap: 20px; /* espace entre les éléments */
+}
+
+header nav li {
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+header nav li:hover {
+  color: #B1663C;
+}
+h2 {
+  font-weight: 700;
+  font-size: 30px;
+  color: #1D6154;
+}
+
+nav ul {
+    display: flex;
+    justify-content: flex-end; /* aligne projets, contact, login et logo à droite */
+    align-items: center;       /* centre verticalement tous les éléments */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 20px;                 /* espace entre les éléments */
+}
+
+nav li img {
+    display: block;
+    height: 24px;              /* ajuste la taille de l’icône pour qu’elle s’aligne bien */
+}
+/* Footer */
+footer {
+  position: fixed;
+  bottom: 10px;
+  right: 50px;
+}
+
+footer nav ul {
+  justify-content: flex-end;
+}
+
+p { font-size: 10px;}
