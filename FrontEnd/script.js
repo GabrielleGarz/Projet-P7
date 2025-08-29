@@ -348,16 +348,16 @@ async function openPreviewModal(imageUrl) {
         console.error("❌ Erreur lors de la récupération des catégories :", err);
     }
 
-    // Bouton Valider
-    const validateBtn = document.createElement("button");
-    validateBtn.innerText = "Valider";
-    validateBtn.classList.add("validate-btn");
-    validateBtn.style.display = "block";
-    validateBtn.style.margin = "20px auto";
-    validateBtn.addEventListener("click", () => {
-        alert("Valider : la photo sera ajoutée à la galerie !");
-        overlay.remove();
-    });
+// Bouton Valider (ouvre la preview)
+const validateBtn = document.createElement("button");
+validateBtn.innerText = "Valider";
+validateBtn.classList.add("validate-btn");
+validateBtn.addEventListener("click", () => {
+    overlay.remove(); // on retire d'abord la 2e modale
+    setTimeout(() => {
+        openPreviewModal("http://localhost:5678/images/hotel-first-arte-new-delhi1651878429528.png");
+    }, 10); // délai très court pour laisser le DOM se mettre à jour
+});
 
     modal.append(backBtn, closeBtn, title, img, labelTitre, inputTitre, labelCategorie, selectCategorie, validateBtn);
     overlay.appendChild(modal);
