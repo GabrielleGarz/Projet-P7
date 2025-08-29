@@ -1,7 +1,14 @@
-document.addEventListener("DOMContentLoaded", () => {
-    init();
+// ============================
+// 🔹 Chargement initial
+// ============================
+document.addEventListener("DOMContentLoaded", async () => {
+    await init();            // construit galerie + filtres
+    handleUserToken();       // ajuste l’interface si connecté
 });
 
+// ============================
+// 🔹 Initialisation portfolio
+// ============================
 async function init() {
     const portfolioSection = document.querySelector("#portfolio");
     const gallery = portfolioSection?.querySelector(".gallery");
@@ -12,7 +19,6 @@ async function init() {
     }
 
     try {
-        // 🔹 Récupération des projets et catégories
         const [worksResponse, categoriesResponse] = await Promise.all([
             fetch("http://localhost:5678/api/works"),
             fetch("http://localhost:5678/api/categories")
@@ -22,10 +28,9 @@ async function init() {
         const categoriesFromAPI = await categoriesResponse.json();
         const categories = [{ id: 0, name: "Tous" }, ...categoriesFromAPI];
 
-        // ✅ Sauvegarde des works pour réutilisation dans les modales
         localStorage.setItem("works", JSON.stringify(works));
 
-        // 🔹 Création des boutons de filtre
+        // Création des boutons de filtre
         const buttonContainer = document.createElement("div");
         buttonContainer.classList.add("button-container");
 
@@ -51,25 +56,33 @@ async function init() {
 
         portfolioSection.insertBefore(buttonContainer, gallery);
 
-        // 🔹 Affichage initial
         displayWorks(works);
 
-// 🔹 Gestion du login
-    const loginLink = document.querySelector('nav ul li:nth-child(3)');
-    if (loginLink) {
-    loginLink.addEventListener('click', e => {
-        e.preventDefault();
-        console.log('%cLog in', "font-family:'Syne',sans-serif;font-weight:700;font-size:30px;color:#1D6154");
-        window.location.href = "login.html"; // redirection vers la page login
-    });
-}
+        // Login redirection
+        const loginLink = document.querySelector('nav ul li:nth-child(3)');
+        if (loginLink) {
+            loginLink.addEventListener('click', e => {
+                e.preventDefault();
+                window.location.href = "login.html";
+            });
+        }
+
+        // Bouton "Modifier" ouvre la galerie
+        const editBtn = document.getElementById("edit-button");
+        if (editBtn) {
+            editBtn.addEventListener("click", () => {
+                modalGallery(works);
+            });
+        }
 
     } catch (error) {
         console.error("❌ Erreur lors de la récupération des données :", error);
     }
 }
 
-// 🔹 Fonction pour afficher les projets
+// ============================
+// 🔹 Affichage des projets
+// ============================
 function displayWorks(worksArray) {
     const gallery = document.querySelector("#portfolio .gallery");
     gallery.innerHTML = "";
@@ -86,22 +99,15 @@ function displayWorks(worksArray) {
         figure.append(img, figcaption);
         gallery.appendChild(figure);
     });
-
-    // Ajout espace vide pour ouvrir la modale galerie
-    const emptySpace = document.createElement("div");
-    emptySpace.classList.add("empty-space");
-    emptySpace.style.height = "150px";
-    emptySpace.style.cursor = "pointer";
-    gallery.appendChild(emptySpace);
-
-    emptySpace.addEventListener("click", () => {
-        modalGallery(worksArray);
-    });
 }
 
-// 🔹 Modale galerie
+// ============================
+// 🔹 Modale Galerie
+// ============================
 function modalGallery(worksArray) {
-    if (document.querySelector(".gallery-overlay")) return; // éviter doublon
+    // Supprime la modale si elle existe
+    const existing = document.querySelector(".gallery-overlay");
+    if (existing) existing.remove();
 
     const overlay = document.createElement("div");
     overlay.classList.add("gallery-overlay");
@@ -128,31 +134,31 @@ function modalGallery(worksArray) {
         img.src = work.imageUrl;
         img.alt = work.title;
 
+        // Bouton supprimer avec icône poubelle
         const deleteBtn = document.createElement("span");
-        deleteBtn.innerText = "🗑️";
         deleteBtn.classList.add("delete-btn");
-        deleteBtn.addEventListener("click", () => wrapper.remove());
+
+        const deleteIcon = document.createElement("img");
+        deleteIcon.src = "assets/icons/bin.png";
+        deleteIcon.alt = "Supprimer";
+        deleteIcon.style.width = "20px";
+        deleteIcon.style.height = "20px";
+        deleteIcon.style.cursor = "pointer";
+
+        deleteIcon.addEventListener("click", () => wrapper.remove());
+        deleteBtn.appendChild(deleteIcon);
 
         wrapper.append(img, deleteBtn);
         container.appendChild(wrapper);
     });
 
-    // Ligne de séparation (au-dessus du bouton)
     const separator = document.createElement("div");
     separator.classList.add("separator");
 
-    // Bouton Ajouter une photo
     const addBtn = document.createElement("button");
     addBtn.innerText = "Ajouter une photo";
     addBtn.classList.add("add-photo-btn");
-
-    console.log("Bouton ajouté :", addBtn); // ✅ Test
-
-    // ✅ Vérification console
-    addBtn.addEventListener("click", () => {
-        console.log("✅ Bouton Ajouter une photo cliqué");
-        openAddPhotoModal();
-    });
+    addBtn.addEventListener("click", () => openAddPhotoModal());
 
     modal.append(closeBtn, title, container, separator, addBtn);
     overlay.appendChild(modal);
@@ -161,11 +167,15 @@ function modalGallery(worksArray) {
     overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
 }
 
-// 🔹 Modale "Ajout photo"
-async function openAddPhotoModal() { 
+// ============================
+// 🔹 Modale Ajout photo
+// ============================
+async function openAddPhotoModal() {
+    // Supprime la modale galerie si elle existe
+    const galleryOverlay = document.querySelector(".gallery-overlay");
+    if (galleryOverlay) galleryOverlay.remove();
 
-    console.log("✅ Fonction openAddPhotoModal appelée !");
-    if (document.querySelector(".add-photo-overlay")) return; // éviter doublon
+    if (document.querySelector(".add-photo-overlay")) return;
 
     const overlay = document.createElement("div");
     overlay.classList.add("add-photo-overlay");
@@ -173,7 +183,7 @@ async function openAddPhotoModal() {
     const modal = document.createElement("div");
     modal.classList.add("add-photo-modal");
 
-    // Flèche retour
+    // Bouton retour
     const backBtn = document.createElement("span");
     backBtn.innerText = "←";
     backBtn.classList.add("back-btn");
@@ -183,17 +193,15 @@ async function openAddPhotoModal() {
         modalGallery(works);
     });
 
-    // Croix fermeture
+    // Bouton fermeture
     const closeBtn = document.createElement("span");
     closeBtn.innerText = "✖";
     closeBtn.classList.add("close-btn");
     closeBtn.addEventListener("click", () => overlay.remove());
 
-    // Titre
     const title = document.createElement("h3");
     title.innerText = "Ajout photo";
 
-    // Cadre upload
     const uploadBox = document.createElement("div");
     uploadBox.classList.add("upload-box");
 
@@ -205,34 +213,33 @@ async function openAddPhotoModal() {
     const addPhotoBtn = document.createElement("button");
     addPhotoBtn.innerText = "+ Ajouter une photo";
     addPhotoBtn.classList.add("upload-btn");
+    addPhotoBtn.addEventListener("click", () => {
+        alert("URL de la photo : http://localhost:5678/images/hotel-first-arte-new-delhi1651878429528.png");
+    });
 
     const fileInfo = document.createElement("p");
     fileInfo.innerText = "jpg, png : 4mo max";
 
     uploadBox.append(mountainIcon, addPhotoBtn, fileInfo);
 
-    // Champ titre
+    // Textareas
     const labelTitre = document.createElement("label");
     labelTitre.innerText = "Titre";
     const inputTitre = document.createElement("textarea");
     inputTitre.rows = 1;
     inputTitre.classList.add("title-input");
-    inputTitre.value = ""; // vide par défaut
 
-    // Champ catégorie
     const labelCategorie = document.createElement("label");
     labelCategorie.innerText = "Catégorie";
     const selectCategorie = document.createElement("select");
     selectCategorie.classList.add("category-select");
 
-    // Option vide par défaut
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
-    defaultOption.innerText = ""; // reste vide
+    defaultOption.innerText = "";
     defaultOption.selected = true;
     selectCategorie.appendChild(defaultOption);
 
-    // Récupération des catégories
     try {
         const response = await fetch("http://localhost:5678/api/categories");
         const categories = await response.json();
@@ -246,18 +253,153 @@ async function openAddPhotoModal() {
         console.error("❌ Erreur lors de la récupération des catégories :", err);
     }
 
-    // Séparateur
     const separator2 = document.createElement("div");
     separator2.classList.add("separator2");
 
-    // Bouton Valider
+    // Bouton Valider (ouvre la preview)
     const validateBtn = document.createElement("button");
     validateBtn.innerText = "Valider";
     validateBtn.classList.add("validate-btn");
+    validateBtn.addEventListener("click", () => {
+        overlay.remove();
+        openPreviewModal("http://localhost:5678/images/hotel-first-arte-new-delhi1651878429528.png");
+    });
 
     modal.append(backBtn, closeBtn, title, uploadBox, labelTitre, inputTitre, labelCategorie, selectCategorie, separator2, validateBtn);
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
     overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ============================
+// 🔹 Troisième modale (preview)
+// ============================
+async function openPreviewModal(imageUrl) {
+    const existing = document.querySelector(".preview-overlay");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.classList.add("preview-overlay");
+
+    const modal = document.createElement("div");
+    modal.classList.add("preview-modal");
+    modal.style.border = "3px solid #ADD8E6"; // cadre bleu clair
+    modal.style.padding = "20px";
+
+    // Bouton retour
+    const backBtn = document.createElement("span");
+    backBtn.innerText = "←";
+    backBtn.classList.add("back-btn");
+    backBtn.style.cursor = "pointer";
+    backBtn.addEventListener("click", () => {
+        overlay.remove();
+        openAddPhotoModal();
+    });
+
+    // Bouton fermeture
+    const closeBtn = document.createElement("span");
+    closeBtn.innerText = "✖";
+    closeBtn.classList.add("close-btn");
+    closeBtn.style.cursor = "pointer";
+    closeBtn.addEventListener("click", () => overlay.remove());
+
+    // Titre
+    const title = document.createElement("h3");
+    title.innerText = "Ajout photo";
+
+    // Image
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = "Photo sélectionnée";
+    img.style.width = "100%";
+    img.style.display = "block";
+    img.style.marginBottom = "10px";
+
+    // Textarea Titre
+    const labelTitre = document.createElement("label");
+    labelTitre.innerText = "Titre";
+    const inputTitre = document.createElement("textarea");
+    inputTitre.rows = 1;
+    inputTitre.classList.add("title-input");
+
+    // Textarea Catégorie
+    const labelCategorie = document.createElement("label");
+    labelCategorie.innerText = "Catégorie";
+    const selectCategorie = document.createElement("select");
+    selectCategorie.classList.add("category-select");
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.innerText = "";
+    defaultOption.selected = true;
+    selectCategorie.appendChild(defaultOption);
+
+    try {
+        const response = await fetch("http://localhost:5678/api/categories");
+        const categories = await response.json();
+        categories.forEach(cat => {
+            const option = document.createElement("option");
+            option.value = cat.id;
+            option.innerText = cat.name;
+            selectCategorie.appendChild(option);
+        });
+    } catch (err) {
+        console.error("❌ Erreur lors de la récupération des catégories :", err);
+    }
+
+    // Bouton Valider
+    const validateBtn = document.createElement("button");
+    validateBtn.innerText = "Valider";
+    validateBtn.classList.add("validate-btn");
+    validateBtn.style.display = "block";
+    validateBtn.style.margin = "20px auto";
+    validateBtn.addEventListener("click", () => {
+        alert("Valider : la photo sera ajoutée à la galerie !");
+        overlay.remove();
+    });
+
+    modal.append(backBtn, closeBtn, title, img, labelTitre, inputTitre, labelCategorie, selectCategorie, validateBtn);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ============================
+// 🔹 Gestion interface si connecté
+// ============================
+function handleUserToken() {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+
+    // Bandeau noir
+    let editBanner = document.getElementById("edit-banner");
+    if (!editBanner) {
+        editBanner = document.createElement("div");
+        editBanner.id = "edit-banner";
+        editBanner.className = "edit-banner";
+        editBanner.innerHTML = `<i class="fa-regular fa-pen-to-square"></i> Mode édition`;
+        document.body.prepend(editBanner);
+    }
+    editBanner.style.display = "block";
+
+    // Bouton "Modifier"
+    const editBtn = document.getElementById("edit-button");
+    if (editBtn) editBtn.style.display = "inline-block";
+
+    // Cacher les filtres
+    const filters = document.querySelector(".button-container");
+    if (filters) filters.style.display = "none";
+
+    // Login → logout
+    const loginLink = document.querySelector("nav ul li:nth-child(3)");
+    if (loginLink) {
+        loginLink.textContent = "logout";
+        loginLink.addEventListener("click", e => {
+            e.preventDefault();
+            localStorage.removeItem("authToken");
+            window.location.reload();
+        });
+    }
 }

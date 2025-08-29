@@ -8,11 +8,17 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
 	<meta name="description" content="">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 	<link rel="stylesheet" href="./assets/style.css">
 	<script src="script.js"defer></script>
 </head>
 <body>
+<!-- Bandeau noir affiché seulement si connecté -->
+<div class="edit-banner" style="display:none;">
+  <i class="fa-regular fa-pen-to-square"></i> Mode édition
+</div>
 <header>
+
 	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 	<nav>
 		<ul>
@@ -36,9 +42,12 @@
 		</article>
 	</section>
 	<section id="portfolio">
-		<h2>Mes Projets</h2>
-		<div class="gallery"></div>
-	  </section>
+<h2 id="projects-title">
+  Mes Projets
+  <span id="edit-button"><i class="fa-regular fa-pen-to-square"></i> Modifier</span>
+</h2>
+  <div class="gallery"></div>
+	</section>
 
 	<section id="contact">
 		<h2>Contact</h2>

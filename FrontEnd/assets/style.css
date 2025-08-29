@@ -433,6 +433,47 @@ button {
 	background-color: #1D6154; /* vert */
 	margin: 40px 0 30px 0; /* espace au-dessus et en dessous */
   }
+/* =======================================
+   Bandeau noir "Mode édition"
+======================================= */
+.edit-banner {
+  position: fixed; /* reste en haut même avec scroll */
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: black;
+  color: white;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 10px 20px;
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  z-index: 1000; /* devant tout */
+}
+
+.edit-banner i {
+  margin-right: 8px;
+}
+
+/* =======================================
+   Bouton "Modifier"
+======================================= */
+#edit-button {
+  display: none; /* visible seulement si connecté */
+  margin-left: 10px;
+  font-size: 14px;
+  color: #1D6154;
+  cursor: pointer;
+}
+
+#edit-button i {
+  margin-right: 5px;
+}
+
+#edit-button:hover {
+  text-decoration: underline; /* souligné au survol */
+}
 
   /*seconde modale*/
   .add-photo-overlay {

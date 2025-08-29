@@ -1,21 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("login-form");
   const errorMsg = document.querySelector(".login-error");
+  const successMsg = document.querySelector(".login-success");
 
-  // 🔹 Nouveau message succès
-  const successMsg = document.createElement("p");
-  successMsg.classList.add("login-success");
-  successMsg.style.display = "none";
-  successMsg.style.color = "green";
-  successMsg.style.marginTop = "10px";
-  successMsg.innerText = "Connexion réussie ✅";
-  form.appendChild(successMsg);
-
-  form.addEventListener("submit", async e => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = form.email.value.trim();
-    const password = form.password.value.trim();
+    const email = form.email.value;
+    const password = form.password.value;
 
     try {
       const response = await fetch("http://localhost:5678/api/users/login", {
@@ -24,26 +16,38 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ email, password })
       });
 
-      if (!response.ok) {
-        errorMsg.innerText = "Erreur dans l’identifiant ou le mot de passe";
+      if (response.ok) {
+        const data = await response.json();
+
+        if (data.token) {
+          // ✅ On stocke le token
+          localStorage.setItem("authToken", data.token);
+
+          // ✅ Affiche message succès
+          errorMsg.style.display = "none";
+          successMsg.textContent = "Connexion réussie";
+          successMsg.style.display = "block";
+          successMsg.style.color = "red";
+
+          // ✅ Redirection après 1s
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1000);
+        } else {
+          errorMsg.textContent = "Aucun token reçu !";
+          errorMsg.style.display = "block";
+          successMsg.style.display = "none";
+        }
+      } else {
+        errorMsg.textContent = "Email ou mot de passe incorrect";
         errorMsg.style.display = "block";
         successMsg.style.display = "none";
-        return;
       }
-
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-
-      // ✅ Connexion réussie
-      console.log("✅ Connexion réussie, token stocké :", data.token);
-      errorMsg.style.display = "none"; // cacher l'erreur si elle était affichée
-      successMsg.style.display = "block"; // montrer le message de succès
-
     } catch (err) {
-      errorMsg.innerText = "Erreur serveur";
+      console.error("❌ Erreur :", err);
+      errorMsg.textContent = "Erreur serveur";
       errorMsg.style.display = "block";
       successMsg.style.display = "none";
-      console.error(err);
     }
   });
 });
