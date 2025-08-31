@@ -307,10 +307,9 @@ fileInput.addEventListener("change", () => {
     overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
 }
 // ============================
-// 🔹 Troisième modale (preview) complète
+// 🔹 Troisième modale (preview) complète avec suppression de doublons
 // ============================
 async function openPreviewModal(fileUrl, file) {
-    // Supprime toute preview existante
     const existing = document.querySelector(".preview-overlay");
     if (existing) existing.remove();
 
@@ -395,7 +394,7 @@ async function openPreviewModal(fileUrl, file) {
     const separator3 = document.createElement("div");
     separator3.classList.add("separator3");
 
-    // Bouton Valider : envoi de la photo au backend et mise à jour de la galerie
+    // Bouton Valider : envoi de la photo au backend et suppression de doublons
     const validateBtn = document.createElement("button");
     validateBtn.innerText = "Valider";
     validateBtn.classList.add("validate-btn");
@@ -422,11 +421,10 @@ async function openPreviewModal(fileUrl, file) {
         formData.append("image", file);
 
         try {
+            // Upload de la nouvelle photo
             const response = await fetch("http://localhost:5678/api/works", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                },
+                headers: { "Authorization": `Bearer ${token}` },
                 body: formData
             });
 
@@ -434,14 +432,30 @@ async function openPreviewModal(fileUrl, file) {
 
             const newWork = await response.json();
             alert("✅ Photo ajoutée à la galerie !");
-
             overlay.remove();
 
-            // Mise à jour galerie locale et affichage
-            const works = JSON.parse(localStorage.getItem("works") || "[]");
-            works.push(newWork);
-            localStorage.setItem("works", JSON.stringify(works));
-            displayWorks(works);
+            // 1️⃣ Récupère toutes les images pour vérifier les doublons
+            const res = await fetch("http://localhost:5678/api/works");
+            const works = await res.json();
+
+            // 2️⃣ Supprime tous les doublons par URL (garde la première occurrence)
+            const seenUrls = new Set();
+            for (const work of works) {
+                if (seenUrls.has(work.imageUrl)) {
+                    await fetch(`http://localhost:5678/api/works/${work.id}`, {
+                        method: "DELETE",
+                        headers: { "Authorization": `Bearer ${token}` }
+                    });
+                } else {
+                    seenUrls.add(work.imageUrl);
+                }
+            }
+
+            // 3️⃣ Met à jour la galerie locale
+            const updatedRes = await fetch("http://localhost:5678/api/works");
+            const updatedWorks = await updatedRes.json();
+            localStorage.setItem("works", JSON.stringify(updatedWorks));
+            displayWorks(updatedWorks);
 
         } catch (err) {
             console.error("❌ Erreur ajout :", err);
@@ -469,7 +483,6 @@ async function openPreviewModal(fileUrl, file) {
         if (e.target === overlay) overlay.remove();
     });
 }
-
 // ============================
 // 🔹 Gestion interface si connecté
 // ============================
