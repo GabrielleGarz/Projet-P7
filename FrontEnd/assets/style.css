@@ -622,3 +622,156 @@ button {
 	font-size: 30px;
 	color: black;
 }
+
+  /*trosième modale*/
+/* Overlay */
+.preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+/* Modale */
+/* Overlays & modales (si pas déjà fait) */
+.preview-overlay,
+.add-photo-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.preview-modal,
+.add-photo-modal {
+  background: #fff;
+  width: 630px;
+  max-width: calc(100vw - 32px);
+  border-radius: 10px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Titres centrés */
+.preview-modal h3,
+.add-photo-modal h3 {
+  margin: 0 0 12px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Zone upload (2e modale) centrée */
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.preview-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.preview-modal {
+    position: relative; /* ✅ nécessaire pour que les boutons absolus se placent correctement */
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 460px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.preview-img-wrapper {
+    background: #dbeafe; /* bleu clair */
+    width: 420px;
+    height: 169px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.preview-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* l’image reste dans le cadre bleu */
+}
+
+.field-group {
+    width: 420px;
+    margin-bottom: 15px;
+    padding: 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+}
+
+.field-group textarea,
+.field-group select {
+    width: 100%;
+    height: 51px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+/* Boutons retour / fermer */
+.preview-modal .back-btn,
+.preview-modal .close-btn {
+    position: absolute;
+    font-size: 18px;
+    cursor: pointer;
+    user-select: none;
+    z-index: 10; /* assure qu’ils sont au-dessus de tout */
+}
+
+.preview-modal .back-btn { top: 10px; left: 10px; }
+.preview-modal .close-btn { top: 10px; right: 10px; }
+
+  /* Barre grise */
+  .separator3 {
+	width: 100%;
+	height: 2px;
+	background-color: #ddd;
+	margin: 30px 0;
+  }
+/* Bouton valider */
+.validate-btn {
+    display: block;
+    margin: 20px auto 0;
+    padding: 8px 60px;
+    background: #14503f;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+}
+.validate-btn:hover {
+    background: #14503f;
+}

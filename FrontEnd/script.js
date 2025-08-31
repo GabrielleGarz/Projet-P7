@@ -168,13 +168,14 @@ function modalGallery(worksArray) {
 }
 
 // ============================
-// 🔹 Modale Ajout photo
+// 🔹 Modale Ajout photo (2e modale)
 // ============================
 async function openAddPhotoModal() {
     // Supprime la modale galerie si elle existe
     const galleryOverlay = document.querySelector(".gallery-overlay");
     if (galleryOverlay) galleryOverlay.remove();
 
+    // Empêche plusieurs modales identiques
     if (document.querySelector(".add-photo-overlay")) return;
 
     const overlay = document.createElement("div");
@@ -202,6 +203,7 @@ async function openAddPhotoModal() {
     const title = document.createElement("h3");
     title.innerText = "Ajout photo";
 
+    // Zone upload
     const uploadBox = document.createElement("div");
     uploadBox.classList.add("upload-box");
 
@@ -210,19 +212,39 @@ async function openAddPhotoModal() {
     mountainIcon.alt = "Upload image";
     mountainIcon.classList.add("mountain-icon");
 
+    // ✅ Input fichier caché
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/png, image/jpeg";
+    fileInput.style.display = "none";
+
+    // ✅ Bouton "Ajouter une photo"
     const addPhotoBtn = document.createElement("button");
     addPhotoBtn.innerText = "+ Ajouter une photo";
     addPhotoBtn.classList.add("upload-btn");
-    addPhotoBtn.addEventListener("click", () => {
-        alert("URL de la photo : http://localhost:5678/images/hotel-first-arte-new-delhi1651878429528.png");
-    });
+    addPhotoBtn.addEventListener("click", () => fileInput.click());
+
+    // ✅ Quand une photo est choisie
+fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (file) {
+        const fileUrl = URL.createObjectURL(file);
+
+        // ✅ Alerte avec l’URL
+        alert("URL de la photo : " + fileUrl);
+
+        // ✅ Fermeture modale 2 → ouverture modale 3 avec l’image choisie
+        overlay.remove();
+     openPreviewModal(fileUrl, file); // 👉 on passe l’URL et pas le File brut
+    }
+});
 
     const fileInfo = document.createElement("p");
     fileInfo.innerText = "jpg, png : 4mo max";
 
-    uploadBox.append(mountainIcon, addPhotoBtn, fileInfo);
+    uploadBox.append(mountainIcon, addPhotoBtn, fileInfo, fileInput);
 
-    // Textareas
+    // Champs formulaire
     const labelTitre = document.createElement("label");
     labelTitre.innerText = "Titre";
     const inputTitre = document.createElement("textarea");
@@ -256,7 +278,7 @@ async function openAddPhotoModal() {
     const separator2 = document.createElement("div");
     separator2.classList.add("separator2");
 
-    // Bouton Valider (ouvre la preview)
+    // ✅ Bouton Valider
     const validateBtn = document.createElement("button");
     validateBtn.innerText = "Valider";
     validateBtn.classList.add("validate-btn");
@@ -265,17 +287,30 @@ async function openAddPhotoModal() {
         openPreviewModal("http://localhost:5678/images/hotel-first-arte-new-delhi1651878429528.png");
     });
 
-    modal.append(backBtn, closeBtn, title, uploadBox, labelTitre, inputTitre, labelCategorie, selectCategorie, separator2, validateBtn);
+    modal.append(
+        backBtn,
+        closeBtn,
+        title,
+        uploadBox,
+        labelTitre,
+        inputTitre,
+        labelCategorie,
+        selectCategorie,
+        separator2,
+        validateBtn
+    );
+
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
+    // Fermeture si clic à l’extérieur
     overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
 }
-
 // ============================
-// 🔹 Troisième modale (preview)
+// 🔹 Troisième modale (preview) complète
 // ============================
-async function openPreviewModal(imageUrl) {
+async function openPreviewModal(fileUrl, file) {
+    // Supprime toute preview existante
     const existing = document.querySelector(".preview-overlay");
     if (existing) existing.remove();
 
@@ -284,8 +319,6 @@ async function openPreviewModal(imageUrl) {
 
     const modal = document.createElement("div");
     modal.classList.add("preview-modal");
-    modal.style.border = "3px solid #ADD8E6"; // cadre bleu clair
-    modal.style.padding = "20px";
 
     // Bouton retour
     const backBtn = document.createElement("span");
@@ -304,26 +337,33 @@ async function openPreviewModal(imageUrl) {
     closeBtn.style.cursor = "pointer";
     closeBtn.addEventListener("click", () => overlay.remove());
 
-    // Titre
+    // Titre modale
     const title = document.createElement("h3");
     title.innerText = "Ajout photo";
 
-    // Image
-    const img = document.createElement("img");
-    img.src = imageUrl;
-    img.alt = "Photo sélectionnée";
-    img.style.width = "100%";
-    img.style.display = "block";
-    img.style.marginBottom = "10px";
+    // Wrapper bleu clair pour l’image
+    const imgWrapper = document.createElement("div");
+    imgWrapper.classList.add("preview-img-wrapper");
 
-    // Textarea Titre
+    const img = document.createElement("img");
+    img.src = fileUrl;
+    img.alt = "Photo sélectionnée";
+    img.classList.add("preview-img");
+
+    imgWrapper.appendChild(img);
+
+    // Champ Titre
     const labelTitre = document.createElement("label");
     labelTitre.innerText = "Titre";
     const inputTitre = document.createElement("textarea");
     inputTitre.rows = 1;
     inputTitre.classList.add("title-input");
 
-    // Textarea Catégorie
+    const fieldTitre = document.createElement("div");
+    fieldTitre.classList.add("field-group");
+    fieldTitre.append(labelTitre, inputTitre);
+
+    // Champ Catégorie
     const labelCategorie = document.createElement("label");
     labelCategorie.innerText = "Catégorie";
     const selectCategorie = document.createElement("select");
@@ -348,22 +388,86 @@ async function openPreviewModal(imageUrl) {
         console.error("❌ Erreur lors de la récupération des catégories :", err);
     }
 
-// Bouton Valider (ouvre la preview)
-const validateBtn = document.createElement("button");
-validateBtn.innerText = "Valider";
-validateBtn.classList.add("validate-btn");
-validateBtn.addEventListener("click", () => {
-    overlay.remove(); // on retire d'abord la 2e modale
-    setTimeout(() => {
-        openPreviewModal("http://localhost:5678/images/hotel-first-arte-new-delhi1651878429528.png");
-    }, 10); // délai très court pour laisser le DOM se mettre à jour
-});
+    const fieldCategorie = document.createElement("div");
+    fieldCategorie.classList.add("field-group");
+    fieldCategorie.append(labelCategorie, selectCategorie);
 
-    modal.append(backBtn, closeBtn, title, img, labelTitre, inputTitre, labelCategorie, selectCategorie, validateBtn);
+    const separator3 = document.createElement("div");
+    separator3.classList.add("separator3");
+
+    // Bouton Valider : envoi de la photo au backend et mise à jour de la galerie
+    const validateBtn = document.createElement("button");
+    validateBtn.innerText = "Valider";
+    validateBtn.classList.add("validate-btn");
+    validateBtn.style.display = "block";
+    validateBtn.style.margin = "20px auto";
+    validateBtn.addEventListener("click", async () => {
+        const titre = inputTitre.value.trim();
+        const categorieId = selectCategorie.value;
+
+        if (!titre || !categorieId || !file) {
+            alert("Veuillez remplir tous les champs et choisir une photo.");
+            return;
+        }
+
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            alert("Vous devez être connecté pour ajouter une photo.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("title", titre);
+        formData.append("category", categorieId);
+        formData.append("image", file);
+
+        try {
+            const response = await fetch("http://localhost:5678/api/works", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (!response.ok) throw new Error("❌ Upload échoué");
+
+            const newWork = await response.json();
+            alert("✅ Photo ajoutée à la galerie !");
+
+            overlay.remove();
+
+            // Mise à jour galerie locale et affichage
+            const works = JSON.parse(localStorage.getItem("works") || "[]");
+            works.push(newWork);
+            localStorage.setItem("works", JSON.stringify(works));
+            displayWorks(works);
+
+        } catch (err) {
+            console.error("❌ Erreur ajout :", err);
+            alert("Erreur lors de l'ajout de la photo. Vérifiez votre connexion ou votre token.");
+        }
+    });
+
+    // Assemblage modale
+    modal.append(
+        backBtn,
+        closeBtn,
+        title,
+        imgWrapper,
+        fieldTitre,
+        fieldCategorie,
+        separator3,
+        validateBtn
+    );
+
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
+    // Fermeture au clic à l'extérieur
+    overlay.addEventListener("click", e => {
+        if (e.target === overlay) overlay.remove();
+    });
 }
 
 // ============================
