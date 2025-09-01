@@ -224,12 +224,13 @@ async function openAddPhotoModal() {
     addPhotoBtn.classList.add("upload-btn");
     addPhotoBtn.addEventListener("click", () => fileInput.click());
 
+    // Quand on choisit une image → ouvrir la 3e modale
     fileInput.addEventListener("change", () => {
         const file = fileInput.files[0];
         if (file) {
             const fileUrl = URL.createObjectURL(file);
             overlay.remove();
-            openPreviewModal(fileUrl, file); // ouvre la 3ᵉ modale
+            openPreviewModal(fileUrl, file); // ✅ passe le vrai file
         }
     });
 
@@ -238,7 +239,7 @@ async function openAddPhotoModal() {
 
     uploadBox.append(mountainIcon, addPhotoBtn, fileInfo, fileInput);
 
-    // Champs formulaire
+    // Champs formulaire (facultatif dans cette 2e modale)
     const labelTitre = document.createElement("label");
     labelTitre.innerText = "Titre";
     const inputTitre = document.createElement("textarea");
@@ -272,13 +273,19 @@ async function openAddPhotoModal() {
     const separator2 = document.createElement("div");
     separator2.classList.add("separator2");
 
-    // Bouton Valider
+    // Bouton Valider corrigé ✅
     const validateBtn = document.createElement("button");
     validateBtn.innerText = "Valider";
     validateBtn.classList.add("validate-btn");
     validateBtn.addEventListener("click", () => {
+        const file = fileInput.files[0];
+        if (!file) {
+            alert("Veuillez d’abord sélectionner une image.");
+            return;
+        }
+        const fileUrl = URL.createObjectURL(file);
         overlay.remove();
-        openPreviewModal("http://localhost:5678/images/hotel-first-arte-new-delhi1651878429528.png");
+        openPreviewModal(fileUrl, file); // ✅ passe le vrai file
     });
 
     modal.append(
@@ -302,7 +309,6 @@ async function openAddPhotoModal() {
         if (galleryOverlay) galleryOverlay.style.display = "flex";
     });
 }
-
  
 /*function refresh gallery*/
 function refreshModalGallery() {
@@ -539,24 +545,6 @@ validateBtn2.addEventListener("click", async () => {
         if (e.target === overlay) overlay.remove();
     });
 }
-    modal.append(
-        backBtn,
-        closeBtn,
-        title,
-        imgWrapper,
-        fieldTitre,
-        fieldCategorie,
-        separator3,
-        validateBtn2
-    );
-
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    overlay.addEventListener("click", e => {
-        if (e.target === overlay) overlay.remove();
-    });
-
 // ============================
 // 🔹 Gestion interface si connecté
 // ============================
