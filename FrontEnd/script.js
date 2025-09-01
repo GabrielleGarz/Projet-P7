@@ -171,9 +171,9 @@ function modalGallery(worksArray) {
 // 🔹 Modale Ajout photo (2e modale)
 // ============================
 async function openAddPhotoModal() {
-    // Supprime la modale galerie si elle existe
+    // Masque temporairement la modale galerie si elle existe
     const galleryOverlay = document.querySelector(".gallery-overlay");
-    if (galleryOverlay) galleryOverlay.remove();
+    if (galleryOverlay) galleryOverlay.style.display = "none"; // juste masquer
 
     // Empêche plusieurs modales identiques
     if (document.querySelector(".add-photo-overlay")) return;
@@ -190,15 +190,17 @@ async function openAddPhotoModal() {
     backBtn.classList.add("back-btn");
     backBtn.addEventListener("click", () => {
         overlay.remove();
-        const works = JSON.parse(localStorage.getItem("works") || "[]");
-        modalGallery(works);
+        if (galleryOverlay) galleryOverlay.style.display = "flex";
     });
 
     // Bouton fermeture
     const closeBtn = document.createElement("span");
     closeBtn.innerText = "✖";
     closeBtn.classList.add("close-btn");
-    closeBtn.addEventListener("click", () => overlay.remove());
+    closeBtn.addEventListener("click", () => {
+        overlay.remove();
+        if (galleryOverlay) galleryOverlay.style.display = "flex";
+    });
 
     const title = document.createElement("h3");
     title.innerText = "Ajout photo";
@@ -212,32 +214,24 @@ async function openAddPhotoModal() {
     mountainIcon.alt = "Upload image";
     mountainIcon.classList.add("mountain-icon");
 
-    // ✅ Input fichier caché
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/png, image/jpeg";
     fileInput.style.display = "none";
 
-    // ✅ Bouton "Ajouter une photo"
     const addPhotoBtn = document.createElement("button");
     addPhotoBtn.innerText = "+ Ajouter une photo";
     addPhotoBtn.classList.add("upload-btn");
     addPhotoBtn.addEventListener("click", () => fileInput.click());
 
-    // ✅ Quand une photo est choisie
-fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
-    if (file) {
-        const fileUrl = URL.createObjectURL(file);
-
-        // ✅ Alerte avec l’URL
-        alert("URL de la photo : " + fileUrl);
-
-        // ✅ Fermeture modale 2 → ouverture modale 3 avec l’image choisie
-        overlay.remove();
-     openPreviewModal(fileUrl, file); // 👉 on passe l’URL et pas le File brut
-    }
-});
+    fileInput.addEventListener("change", () => {
+        const file = fileInput.files[0];
+        if (file) {
+            const fileUrl = URL.createObjectURL(file);
+            overlay.remove();
+            openPreviewModal(fileUrl, file); // ouvre la 3ᵉ modale
+        }
+    });
 
     const fileInfo = document.createElement("p");
     fileInfo.innerText = "jpg, png : 4mo max";
@@ -278,7 +272,7 @@ fileInput.addEventListener("change", () => {
     const separator2 = document.createElement("div");
     separator2.classList.add("separator2");
 
-    // ✅ Bouton Valider
+    // Bouton Valider
     const validateBtn = document.createElement("button");
     validateBtn.innerText = "Valider";
     validateBtn.classList.add("validate-btn");
@@ -303,9 +297,70 @@ fileInput.addEventListener("change", () => {
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    // Fermeture si clic à l’extérieur
-    overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
+    overlay.addEventListener("click", e => {
+        if (e.target === overlay) overlay.remove();
+        if (galleryOverlay) galleryOverlay.style.display = "flex";
+    });
 }
+
+ 
+/*function refresh gallery*/
+function refreshModalGallery() {
+    const overlay = document.querySelector(".gallery-overlay");
+    if (!overlay) return;
+
+    const container = overlay.querySelector(".gallery-images");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const works = JSON.parse(localStorage.getItem("works") || "[]");
+
+    works.forEach(work => {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("img-wrapper");
+
+        const img = document.createElement("img");
+        img.src = work.imageUrl;
+        img.alt = work.title;
+
+        const deleteBtn = document.createElement("span");
+        deleteBtn.classList.add("delete-btn");
+
+        const deleteIcon = document.createElement("img");
+        deleteIcon.src = "assets/icons/bin.png";
+        deleteIcon.alt = "Supprimer";
+        deleteIcon.style.width = "20px";
+        deleteIcon.style.height = "20px";
+        deleteIcon.style.cursor = "pointer";
+
+        deleteIcon.addEventListener("click", async () => {
+            const token = localStorage.getItem("authToken");
+            if (!token) return alert("Vous devez être connecté pour supprimer");
+
+            try {
+                const res = await fetch(`http://localhost:5678/api/works/${work.id}`, {
+                    method: "DELETE",
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error("❌ Suppression échouée");
+
+                const updatedWorks = JSON.parse(localStorage.getItem("works") || "[]").filter(w => w.id !== work.id);
+                localStorage.setItem("works", JSON.stringify(updatedWorks));
+                refreshModalGallery();
+                displayWorks(updatedWorks);
+            } catch (err) {
+                console.error(err);
+                alert("Erreur lors de la suppression");
+            }
+        });
+
+        deleteBtn.appendChild(deleteIcon);
+        wrapper.append(img, deleteBtn);
+        container.appendChild(wrapper);
+    });
+}
+
 // ============================
 // 🔹 Troisième modale (preview) complète avec suppression de doublons
 // ============================
@@ -319,28 +374,22 @@ async function openPreviewModal(fileUrl, file) {
     const modal = document.createElement("div");
     modal.classList.add("preview-modal");
 
-    // Bouton retour
     const backBtn = document.createElement("span");
     backBtn.innerText = "←";
     backBtn.classList.add("back-btn");
-    backBtn.style.cursor = "pointer";
     backBtn.addEventListener("click", () => {
         overlay.remove();
         openAddPhotoModal();
     });
 
-    // Bouton fermeture
     const closeBtn = document.createElement("span");
     closeBtn.innerText = "✖";
     closeBtn.classList.add("close-btn");
-    closeBtn.style.cursor = "pointer";
     closeBtn.addEventListener("click", () => overlay.remove());
 
-    // Titre modale
     const title = document.createElement("h3");
     title.innerText = "Ajout photo";
 
-    // Wrapper bleu clair pour l’image
     const imgWrapper = document.createElement("div");
     imgWrapper.classList.add("preview-img-wrapper");
 
@@ -351,7 +400,6 @@ async function openPreviewModal(fileUrl, file) {
 
     imgWrapper.appendChild(img);
 
-    // Champ Titre
     const labelTitre = document.createElement("label");
     labelTitre.innerText = "Titre";
     const inputTitre = document.createElement("textarea");
@@ -362,7 +410,6 @@ async function openPreviewModal(fileUrl, file) {
     fieldTitre.classList.add("field-group");
     fieldTitre.append(labelTitre, inputTitre);
 
-    // Champ Catégorie
     const labelCategorie = document.createElement("label");
     labelCategorie.innerText = "Catégorie";
     const selectCategorie = document.createElement("select");
@@ -394,76 +441,86 @@ async function openPreviewModal(fileUrl, file) {
     const separator3 = document.createElement("div");
     separator3.classList.add("separator3");
 
-    // Bouton Valider : envoi de la photo au backend et suppression de doublons
-    const validateBtn = document.createElement("button");
-    validateBtn.innerText = "Valider";
-    validateBtn.classList.add("validate-btn");
-    validateBtn.style.display = "block";
-    validateBtn.style.margin = "20px auto";
-    validateBtn.addEventListener("click", async () => {
-        const titre = inputTitre.value.trim();
-        const categorieId = selectCategorie.value;
+    // Bouton Valider
+    const validateBtn2 = document.createElement("button");
+    validateBtn2.innerText = "Valider";
+    validateBtn2.classList.add("validate-btn");
+    validateBtn2.style.display = "block";
+    validateBtn2.style.margin = "20px auto";
 
-        if (!titre || !categorieId || !file) {
-            alert("Veuillez remplir tous les champs et choisir une photo.");
-            return;
-        }
+validateBtn2.addEventListener("click", async () => {
+    const titre = inputTitre.value.trim();
+    const categorieId = selectCategorie.value;
 
-        const token = localStorage.getItem("authToken");
-        if (!token) {
-            alert("Vous devez être connecté pour ajouter une photo.");
-            return;
-        }
+    if (!titre || !categorieId || !file) {
+        alert("Veuillez remplir tous les champs et choisir une photo.");
+        return;
+    }
 
-        const formData = new FormData();
-        formData.append("title", titre);
-        formData.append("category", categorieId);
-        formData.append("image", file);
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+        alert("Vous devez être connecté pour ajouter une photo.");
+        return;
+    }
 
-        try {
-            // Upload de la nouvelle photo
-            const response = await fetch("http://localhost:5678/api/works", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${token}` },
-                body: formData
-            });
+    const formData = new FormData();
+    formData.append("title", titre);
+    formData.append("category", categorieId);
+    formData.append("image", file);
 
-            if (!response.ok) throw new Error("❌ Upload échoué");
+    try {
+        // 1️⃣ Upload de la nouvelle photo
+        const response = await fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}` },
+            body: formData
+        });
 
-            const newWork = await response.json();
-            alert("✅ Photo ajoutée à la galerie !");
-            overlay.remove();
+        if (!response.ok) throw new Error("❌ Upload échoué");
 
-            // 1️⃣ Récupère toutes les images pour vérifier les doublons
-            const res = await fetch("http://localhost:5678/api/works");
-            const works = await res.json();
+        const newWork = await response.json();
+        alert("✅ Photo ajoutée à la galerie !");
+        overlay.remove(); // ferme la 3e modale
 
-            // 2️⃣ Supprime tous les doublons par URL (garde la première occurrence)
-            const seenUrls = new Set();
-            for (const work of works) {
-                if (seenUrls.has(work.imageUrl)) {
-                    await fetch(`http://localhost:5678/api/works/${work.id}`, {
-                        method: "DELETE",
-                        headers: { "Authorization": `Bearer ${token}` }
-                    });
-                } else {
-                    seenUrls.add(work.imageUrl);
-                }
+        // 2️⃣ Récupère toutes les images depuis l’API
+        const res = await fetch("http://localhost:5678/api/works");
+        let works = await res.json();
+
+        // 3️⃣ Supprime les doublons par URL
+        const seenUrls = new Set();
+        const uniqueWorks = [];
+
+        for (const work of works) {
+            if (!seenUrls.has(work.imageUrl)) {
+                seenUrls.add(work.imageUrl);
+                uniqueWorks.push(work);
+            } else {
+                // Supprime le doublon via API
+                await fetch(`http://localhost:5678/api/works/${work.id}`, {
+                    method: "DELETE",
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
             }
-
-            // 3️⃣ Met à jour la galerie locale
-            const updatedRes = await fetch("http://localhost:5678/api/works");
-            const updatedWorks = await updatedRes.json();
-            localStorage.setItem("works", JSON.stringify(updatedWorks));
-            displayWorks(updatedWorks);
-
-        } catch (err) {
-            console.error("❌ Erreur ajout :", err);
-            alert("Erreur lors de l'ajout de la photo. Vérifiez votre connexion ou votre token.");
         }
-    });
 
-    // Assemblage modale
+        // 4️⃣ Met à jour le localStorage
+        localStorage.setItem("works", JSON.stringify(uniqueWorks));
+
+        // 5️⃣ Met à jour la galerie principale sur la page
+        displayWorks(uniqueWorks);
+
+        // 6️⃣ Rafraîchit la modale galerie si elle est ouverte
+        const galleryOverlay = document.querySelector(".gallery-overlay");
+        if (galleryOverlay) {
+            refreshModalGallery();
+        }
+
+    } catch (err) {
+        console.error("❌ Erreur ajout :", err);
+        alert("Erreur lors de l'ajout de la photo. Vérifiez votre connexion ou votre token.");
+    }
+});
+
     modal.append(
         backBtn,
         closeBtn,
@@ -472,17 +529,34 @@ async function openPreviewModal(fileUrl, file) {
         fieldTitre,
         fieldCategorie,
         separator3,
-        validateBtn
+        validateBtn2
     );
 
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    // Fermeture au clic à l'extérieur
     overlay.addEventListener("click", e => {
         if (e.target === overlay) overlay.remove();
     });
 }
+    modal.append(
+        backBtn,
+        closeBtn,
+        title,
+        imgWrapper,
+        fieldTitre,
+        fieldCategorie,
+        separator3,
+        validateBtn2
+    );
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", e => {
+        if (e.target === overlay) overlay.remove();
+    });
+
 // ============================
 // 🔹 Gestion interface si connecté
 // ============================

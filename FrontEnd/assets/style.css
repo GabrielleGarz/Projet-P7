@@ -549,18 +549,19 @@ button {
   margin-top: 10px;
   padding: 10px;
   font-size: 16px;
-  border: 1px solid #ccc; /* bordure grise par défaut */
+  border: none;
   border-radius: 5px;
   box-sizing: border-box;
   resize: none; /* empêche d’étirer le textarea */
   text-align: left;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Focus en bleu */
 .add-photo-modal textarea:focus,
 .add-photo-modal select:focus {
   outline: none; /* supprime le contour noir par défaut */
-  border: 2px solid #14503f; /* contour bleu/vert foncé au clic */
+  border: 2px solid rgb(101, 101, 204); /* contour bleu/au clic */
   box-shadow: 0 0 5px rgba(20, 80, 63, 0.5); /* léger glow bleu */
 }
 
@@ -623,7 +624,7 @@ button {
 	display: block;
 	margin: 0 auto 20px auto; /* ✅ centré automatiquement */
 	padding: 10px 100px;
-	background-color: #ccc;
+	background-color: grey;
 	color: white;
 	border: none;
 	border-radius: 30px;
@@ -782,7 +783,7 @@ button {
 	margin: 30px 0;
   }
 /* Bouton valider */
-.validate-btn {
+.validate-btn2 {
     display: block;
     margin: 20px auto 0;
     padding: 8px 60px;
@@ -792,6 +793,6 @@ button {
     border-radius: 30px;
     cursor: pointer;
 }
-.validate-btn:hover {
+.validate-btn2:hover {
     background: #14503f;
 }
